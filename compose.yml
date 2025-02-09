@@ -1,0 +1,12 @@
+services:
+  address-service:
+    build:
+      context: ./address-service
+  address-db:
+    image: mariadb:11
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_DATABASE=address
+    ports:
+      - 3306:3306
+    
