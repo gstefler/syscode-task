@@ -1,28 +1,38 @@
-import express from "express";
+import { prisma } from "./prisma";
+import { console } from "inspector";
+import logger from "./config/logger";
+import app from "./app";
 
-const app = express();
+logger.info("Starting address service... Environment:", process.env.NODE_ENV);
 
-const PORT = process.env.PORT || 3000;
-
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
-
+const PORT = process.env.PORT || 80;
 const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  logger.info(`Server is running on http://localhost:${PORT}`);
 });
+
+async function prismaCleanup() {
+  try {
+    await prisma.$disconnect();
+    logger.info("Prisma connection has been closed");
+  } catch (e) {
+    console.error(e);
+  }
+}
 
 function shutDown() {
-  console.log("Received kill signal, shutting down gracefully");
-  server.close(() => {
+  logger.info("Received kill signal, shutting down gracefully...");
+  server.close(async () => {
+    await prismaCleanup();
     process.exit(0);
   });
 
-  setTimeout(() => {
-    console.error("Timeout, forcefully shutting down");
+  setTimeout(async () => {
+    logger.error(
+      "Could not close connections in time, forcefully shutting down"
+    );
+    await prismaCleanup();
     process.exit(1);
   }, 10000);
-  process.exit(0);
 }
 
 process.on("SIGTERM", shutDown);

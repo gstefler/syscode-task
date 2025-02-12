@@ -1,15 +1,42 @@
 {
   "compilerOptions": {
-    "target": "ES2020",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "target": "ES2020" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
 
-    "module": "commonjs",                                /* Specify what module code is generated. */
-    "rootDir": "src",                                    /* Specify the root folder within your source files. */
-    "outDir": "dist",                                    /* Specify an output folder for all emitted files. */
-    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
+    "module": "commonjs" /* Specify what module code is generated. */,
+    "outDir": "dist" /* Specify an output folder for all emitted files. */,
 
-    "strict": true,                                      /* Enable all strict type-checking options. */
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+
+    /* Experimental Options */
+    "experimentalDecorators": true,
+    // emitDecoratorMetadata is not needed by tsoa (unless you are using Custom Middlewares)
+
+    /* Advanced Options */
+    "forceConsistentCasingInFileNames": true /* Skip type checking all .d.ts files. */,
+    "types": ["node", "jest"]
   },
-  "include": ["src/**/*"],                               /* Specify an array of glob patterns that match files to include in the program. */
+  "include": [
+    "src/**/*",
+    "tests/**/*.ts"
+  ] /* Specify an array of glob patterns that match files to include in the program. */
 }
