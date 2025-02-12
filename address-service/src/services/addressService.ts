@@ -1,41 +1,37 @@
-import { v4 as uuidv4 } from "uuid";
+import { ValidateError } from "tsoa";
 import { prisma } from "../prisma";
+import { validate as isValidUUID } from "uuid";
 
-export type Address = {
+export type AddressCreationDto = {
   id: string;
   address: string;
-  userId: string;
 };
 
-export type AddressCreationParams = Pick<Address, "address" | "userId">;
-export type AddressUpdateParams = Pick<Address, "address">;
-
 export class AddressService {
-  static async create(data: AddressCreationParams) {
+  static async create(data: AddressCreationDto) {
+    if (!isValidUUID(data.id)) {
+      throw new ValidateError(
+        {
+          id: {
+            message: "Invalid UUID",
+          },
+        },
+        "Invalid UUID"
+      );
+    }
+
+    if (!data.address) {
+      data.address = Math.random().toString(36).substring(7);
+    }
     return prisma.address.create({
-      data: {
-        id: uuidv4(),
-        ...data,
-      },
+      // typescript misery
+      data: data as any,
     });
   }
 
   static async findById(id: string) {
-    return prisma.address.findUnique({
+    return prisma.address.findUniqueOrThrow({
       where: { id },
-    });
-  }
-
-  static async findByUserId(userId: string) {
-    return prisma.address.findMany({
-      where: { userId },
-    });
-  }
-
-  static async update(id: string, data: AddressUpdateParams) {
-    return prisma.address.update({
-      where: { id },
-      data,
     });
   }
 

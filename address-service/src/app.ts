@@ -15,10 +15,6 @@ app.use(
 app.use(json());
 app.use(cors());
 
-app.get("/up", (_req, res) => {
-  res.status(200).send({ status: "up" });
-});
-
 app.use(
   expressWinston.logger({
     winstonInstance: logger,
@@ -29,15 +25,13 @@ app.use(
   })
 );
 
+app.get("/up", (_req, res) => {
+  res.status(200).send({ status: "up" });
+});
+
 RegisterRoutes(app);
 
 app.use(notFoundHandler);
-
-app.use(
-  expressWinston.errorLogger({
-    winstonInstance: logger,
-  })
-);
 
 app.use(errorHandler);
 

@@ -36,7 +36,11 @@
     "types": ["node", "jest"]
   },
   "include": [
-    "src/**/*",
-    "tests/**/*.ts"
-  ] /* Specify an array of glob patterns that match files to include in the program. */
+    "src/**/*"
+  ] /* Specify an array of glob patterns that match files to include in the program. */,
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test"
+  ] /* Specify an array of glob patterns that match files to exclude from the program. */
 }

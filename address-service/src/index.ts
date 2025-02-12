@@ -1,5 +1,4 @@
 import { prisma } from "./prisma";
-import { console } from "inspector";
 import logger from "./config/logger";
 import app from "./app";
 
@@ -15,7 +14,7 @@ async function prismaCleanup() {
     await prisma.$disconnect();
     logger.info("Prisma connection has been closed");
   } catch (e) {
-    console.error(e);
+    logger.error(e);
   }
 }
 

@@ -1,43 +1,29 @@
 import {
   Route,
   Post,
-  Get,
-  Put,
   Delete,
   Controller,
   SuccessResponse,
   Body,
+  Get,
 } from "tsoa";
-import {
-  AddressCreationParams,
-  AddressService,
-  Address,
-  AddressUpdateParams,
-} from "../services/addressService";
+import { AddressService, AddressCreationDto } from "../services/addressService";
 
 @Route("address")
 export class AddressController extends Controller {
+  @Get("{id}")
+  public async findById(id: string): Promise<AddressCreationDto> {
+    return await AddressService.findById(id);
+  }
+
   @Post("/")
   @SuccessResponse("201", "Created")
   public async create(
-    @Body() requestBody: AddressCreationParams
-  ): Promise<Address> {
+    @Body() requestBody: AddressCreationDto
+  ): Promise<AddressCreationDto> {
     const newAddress = await AddressService.create(requestBody);
     this.setStatus(201);
     return newAddress;
-  }
-
-  @Get("user/{id}")
-  public async findByUserId(id: string): Promise<Address[]> {
-    return AddressService.findByUserId(id);
-  }
-
-  @Put("{id}")
-  public async update(
-    id: string,
-    @Body() requestBody: AddressUpdateParams
-  ): Promise<Address> {
-    return AddressService.update(id, requestBody);
   }
 
   @Delete("{id}")

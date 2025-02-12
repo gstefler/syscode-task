@@ -1,9 +1,14 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import logger from "../config/logger";
 import { ValidateError } from "tsoa";
 import { Prisma } from "@prisma/client";
 
-export function errorHandler(err: unknown, req: Request, res: Response): void {
+export function errorHandler(
+  err: unknown,
+  req: Request,
+  res: Response,
+  _next: NextFunction
+): void {
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
       case "P2025":
@@ -11,9 +16,13 @@ export function errorHandler(err: unknown, req: Request, res: Response): void {
           message: "Not Found",
         });
         return;
+      case "P2002":
+        res.status(409).json({
+          message: "Conflict: A record with this identifier already exists.",
+        });
+        return;
     }
   }
-
   if (err instanceof ValidateError) {
     console.warn(`Validation error on ${req.path}:`, err.fields);
     res.status(422).json({

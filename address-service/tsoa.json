@@ -9,6 +9,8 @@
     "schemes": ["http"]
   },
   "routes": {
+    "middleware": "express",
+    "validation": true,
     "routesDir": "src"
   }
 }
