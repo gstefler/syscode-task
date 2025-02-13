@@ -37,9 +37,5 @@
   },
   "include": [
     "src/**/*"
-  ] /* Specify an array of glob patterns that match files to include in the program. */,
-  "exclude": [
-    "node_modules",
-    "dist"
-  ] /* Specify an array of glob patterns that match files to exclude from the program. */
+  ] /* Specify an array of glob patterns that match files to include in the program. */
 }

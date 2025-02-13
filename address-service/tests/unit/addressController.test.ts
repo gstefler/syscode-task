@@ -1,3 +1,4 @@
+import { v4 } from "uuid";
 import { AddressController } from "../../src/controllers/addressController";
 import { AddressService } from "../../src/services/addressService";
 
@@ -11,8 +12,9 @@ describe("AddressController Unit Tests", () => {
   });
 
   it("should create an address via controller", async () => {
-    const payload = { address: "asd1", userId: "user1" };
-    const mockCreatedAddress = { id: "generated-uuid", ...payload };
+    const id = v4();
+    const payload = { id, address: "asd1" };
+    const mockCreatedAddress = { ...payload };
 
     (AddressService.create as jest.Mock).mockResolvedValue(mockCreatedAddress);
 
@@ -21,34 +23,21 @@ describe("AddressController Unit Tests", () => {
     expect(result).toEqual(mockCreatedAddress);
   });
 
-  it("should get addresses by user id via controller", async () => {
-    const userId = "user1";
-    const mockAddresses = [{ id: "1", address: "asd1", userId }];
-    (AddressService.findByUserId as jest.Mock).mockResolvedValue(mockAddresses);
+  it("should get addresses by id via controller", async () => {
+    const id = v4();
+    const mockAddresses = [{ id, address: "asd1" }];
+    (AddressService.findById as jest.Mock).mockResolvedValue(mockAddresses);
 
-    const result = await controller.findByUserId(userId);
-    expect(AddressService.findByUserId).toHaveBeenCalledWith(userId);
+    const result = await controller.findById(id);
+    expect(AddressService.findById).toHaveBeenCalledWith(id);
     expect(result).toEqual(mockAddresses);
   });
 
-  it("should update an address via controller", async () => {
-    const addressId = "id1";
-    const payload = { address: "asd1" };
-    const updatedAddress = { id: addressId, ...payload };
-    (AddressService.update as jest.Mock).mockResolvedValue(updatedAddress);
-
-    const result = await controller.update(addressId, payload);
-    expect(AddressService.update).toHaveBeenCalledWith(addressId, {
-      address: payload.address,
-    });
-    expect(result).toEqual(updatedAddress);
-  });
-
   it("should delete an address via controller", async () => {
-    const addressId = "id1";
+    const id = v4();
     (AddressService.delete as jest.Mock).mockResolvedValue(undefined);
 
-    await controller.delete(addressId);
-    expect(AddressService.delete).toHaveBeenCalledWith(addressId);
+    await controller.delete(id);
+    expect(AddressService.delete).toHaveBeenCalledWith(id);
   });
 });
