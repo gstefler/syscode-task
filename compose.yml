@@ -1,7 +1,32 @@
 services:
+  user-service:
+    build:
+      context: user-service
+    environment:
+      - DATABASE_URL=mysql://root:root@user-db:3306/student
+      - ADDRESS_SERVICE_URL=http://address-service
+    ports:
+      - 4000:80
+    depends_on:
+      user-db:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+    command: >
+      sh -c "npx prisma db pull && npx prisma generate && npm run start"
+
   address-service:
     build:
-      context: ./address-service
+      context: address-service
+    environment:
+      - DATABASE_URL=mysql://root:root@address-db:3306/address
+    depends_on:
+      address-db:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma migrate deploy
+            npm run start"
+
   address-db:
     image: mariadb:11
     environment:
@@ -9,4 +34,50 @@ services:
       - MARIADB_DATABASE=address
     ports:
       - 3306:3306
-    
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+  user-db:
+    image: mariadb:11
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_DATABASE=student
+    ports:
+      - 3308:3306
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - 8081:8080
+    volumes:
+      - ./user-service/openapi:/openapi
+    environment:
+      SWAGGER_JSON: /openapi/swagger.json
+
+  liquibase:
+    image: liquibase/liquibase:4.25
+    depends_on:
+      user-db:
+        condition: service_healthy
+    environment:
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: db-changelog.json
+      LIQUIBASE_COMMAND_URL: jdbc:mariadb://user-db:3306/student
+      LIQUIBASE_COMMAND_USERNAME: root
+      LIQUIBASE_COMMAND_PASSWORD: root
+      LIQUIBASE_SEARCH_PATH: /liquibase
+    volumes:
+      - ./user-service/liquibase/db-changelog.json:/liquibase/db-changelog.json
+    command: update
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080

@@ -1,0 +1,6 @@
+services:
+  k6:
+    image: grafana/k6:latest
+    volumes:
+      - ./load-test:/load-test
+    command: run /load-test/test.js
